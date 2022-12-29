@@ -22,25 +22,46 @@ text-align: justify}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# R Markdown
-apayaa
+# Alogaritma k-means
+   K-Means merupakan alogaritma yang membentuk paramenter input sebanyak k dan membagi sekumpulan n objek kedalam k cluster sehingga tingkat kemiringan anggota dalam satu cluster tinggi kemiringan antara anggota dalam satu cluster tinggi sedangkan tinggi kemiringan dengan anggota pada cluster lain sangat rendan. 
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents [@deCarvalho2012]. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+# Tahapan alogaritma k-means
+1.Tentukan juSiapkan data set
+2.mlah kelompok
+3.Alokasikan data ke dalam kelompok secara acak
+4.Hitung pusat kelompok (sentoid/rata-rata) dari data yang ada di Masing-masing   kelompok
+5.Alokasikan masing-masing data ke sentroid/rata-rata terdekat
+6.Kembali ke langakah 3.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
-```{r cars}
-summary(cars)
+# Eksperimen alogaritma k-means
+
+
+# Replication Requieremnts
+   Untuk melakukan Analysis ini, package yang diperlukan ialah:
+```{r eval=FALSE}
+ library(tidyverse)
+ library(cluster)
+ library(factoextra)
+ library(PerformanceAnalytics)
+ library(ggpubr)
+ library(tibble)
+ library(MVN)
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+# Data Preparation
+```{r}
+#read data
+data=read.csv(file.choose(),header=TRUE)
+# cek data
+head(data)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
 
 # Referensi
+
+
+
+
