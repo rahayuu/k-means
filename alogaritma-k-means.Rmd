@@ -1,0 +1,104 @@
+---
+title: "Alogaritma k-means"
+date: "`r Sys.Date()`"
+author: Rahayu dwiastuti pujiningrum-Institut Teknologi Statistika dan Bisnis Muhammadiyah
+output:
+  rmdformats::readthedown:
+    self_contained: true
+    thumbnails: true
+    lightbox: true
+    gallery: false
+    highlight: tango
+bibliography: references.bib
+---
+
+```{=html}
+<style>
+body{
+text-align: justify}
+</style>
+```
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Alogaritma k-means
+   K-Means merupakan alogaritma yang membentuk paramenter input sebanyak k dan membagi sekumpulan n objek kedalam k cluster sehingga tingkat kemiringan anggota dalam satu cluster tinggi kemiringan antara anggota dalam satu cluster tinggi sedangkan tinggi kemiringan dengan anggota pada cluster lain sangat rendan. 
+
+# Tahapan alogaritma k-means
+1.Tentukan juSiapkan data set
+2.mlah kelompok
+3.Alokasikan data ke dalam kelompok secara acak
+4.Hitung pusat kelompok (sentoid/rata-rata) dari data yang ada di Masing-masing   kelompok
+5.Alokasikan masing-masing data ke sentroid/rata-rata terdekat
+6.Kembali ke langakah 3.
+
+
+# Eksperimen alogaritma k-means
+
+
+
+
+# Replication Requieremnts
+   Untuk melakukan Analysis ini, package yang diperlukan ialah;
+   Tujuan dilakukannya analisis kluster adalah untuk mengklasterkan negara-negara ASEAN berdasarkan indikator kependudukanya yang meliputi indikator kematian dan kelahiran. Indikator kematian dan kelahiran penduduk dapat digunakan untuk mengetahui kualitas kesehatan penduduk di negara-negara ASEAN.
+
+Data yang digunakan di artikel ini dapat diunduh di tautan berikut : https://github.com/nadhifanhf/Multivariate-R/tree/master/Datasets
+
+```{r=FALSE}
+library(readr)
+library(dplyr)
+library(DT)
+library(USArrests)
+```
+
+# Input Data
+```{r=false}
+asean_data <- read_csv("asean_demografi.csv")
+datatable(asean_data, caption = "Indikator Demografi Negara ASEAN 2015")
+```
+
+# Tahapan Sebelum Analisis Klaster
+-Normalisasi Data
+
+Karena data yang digunakan memiliki satuan dan rentang yang berbeda, maka perlu dilakukan standardisasi data terlebih dahulu sebelum masuk ke analisis klaster. Untuk melakukan standardisasi data ke dalam normal baku di R dapat menggunakan fungsi scale().
+
+```{r=EVAL}
+data_standardized <- round(scale(asean_data[,2:5]),4) #Hanya memilih kolom/variabel yang berisikan indikator kelahiran dan kematian
+datatable(data_standardized, caption = "Data Hasil Standardisasi")
+```
+
+# Menentukan jumlah klastering
+Dalam metode k-means banyaknya klaster ditentukan sendiri oleh pengguna. Maka dari itu perlu dicari jumlah klaster yang optimum yang dapat mengelompokkan objek dengan baik (Perlu diketahui bahwa metode ini relatif subjektif). Salah satu metode yang digunakan adalah Elbow Plot. Elbow Plot merupakan plot antara banyak klaster dengan total within-cluster variation (total dari simpangan per kluster). Banyak klaster yang dipilih adalah bagian “siku” atau titik dimana terdapat penurunan yang tajam sebelum titik tersebut dan disusul penurunan yang tidak tajam setelah titik tersebut. Hal ini karena penambahan jumlah klaster tidak membawa pengaruh banyak atas variasi yang ada di dalam klaster tersebut.
+
+```{r->eval}
+jumlah_klaster <- c(1:9)  #Vektor yang berisikan jumlah klaster yang ingin dilihat nilai dari total within-cluster sum of squares
+within_ss <- c()  #Vektor kosong yang akan diisi nilai total within-cluster sum of squares
+for (i in jumlah_klaster) {
+  within_ss <- c(within_ss, kmeans(x = data_standardized, centers = i, nstart = 25)$tot.withinss)
+}
+
+plot(x = jumlah_klaster, y = within_ss, type = "b", xlab = "Number of Cluster",
+     ylab = "Total Within Sum of Squares", main = "Elbow Plot")
+abline(v = 4, col = 'red')
+```
+
+# Memulai Analisis Klaster
+
+-Analisis Klaster
+```{r->eval}
+set.seed(123)
+kmeans_clustering <- kmeans(x = data_standardized, centers = 4, nstart = 25)
+
+#parameter nstart digunakan untuk memberitahu fungsi berapa kali inisiasi centroid awal (secara acak) yang akan dibentuk dan centers digunakan untuk memberitahu fungsi berapa jumlah klaster yang akan dibentuk.
+kmeans_clustering
+```
+
+
+
+# Referensi
+
+
+
+
+

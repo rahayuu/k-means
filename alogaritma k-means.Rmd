@@ -39,24 +39,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Replication Requieremnts
    Untuk melakukan Analysis ini, package yang diperlukan ialah:
-```{r eval=FALSE}
- library(tidyverse)
- library(cluster)
- library(factoextra)
- library(PerformanceAnalytics)
- library(ggpubr)
- library(tibble)
- library(MVN)
+```{r=FALSE}
+library(readr)
+library(dplyr)
 ```
-
-# Data Preparation
-```{r}
-#read data
-data=read.csv(file.choose(),header=TRUE)
-# cek data
-head(data)
-```
-
+ 
 
 
 
