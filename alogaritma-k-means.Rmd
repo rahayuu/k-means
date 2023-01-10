@@ -113,6 +113,13 @@ fviz_nbclust(data, kmeans, method = "wss") +
 
 ```
 
+# Metode Silhouette
+```{r}
+##Average Silhouette Method
+fviz_nbclust(data, kmeans, method = "silhouette")
+```
+
+
 
 
 
