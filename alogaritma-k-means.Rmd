@@ -1,5 +1,5 @@
 ---
-title: "Alogaritma k-means"
+title: "Algaritma k-means"
 date: "`r Sys.Date()`"
 author: Rahayu dwiastuti pujiningrum-Institut Teknologi Statistika dan Bisnis Muhammadiyah
 output:
@@ -22,110 +22,191 @@ text-align: justify}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Alogaritma k-means
+# Algaritma k-means
    K-Means merupakan alogaritma yang membentuk paramenter input sebanyak k dan membagi sekumpulan n objek kedalam k cluster sehingga tingkat kemiringan anggota dalam satu cluster tinggi kemiringan antara anggota dalam satu cluster tinggi sedangkan tinggi kemiringan dengan anggota pada cluster lain sangat rendan. 
 
 # Tahapan alogaritma k-means
-1.Tentukan juSiapkan data set
-2.mlah kelompok
-3.Alokasikan data ke dalam kelompok secara acak
-4.Hitung pusat kelompok (sentoid/rata-rata) dari data yang ada di Masing-masing   kelompok
-5.Alokasikan masing-masing data ke sentroid/rata-rata terdekat
-6.Kembali ke langakah 3.
+
+     1.Tentukan juSiapkan data set  
+     2.mlah kelompok
+     3.Alokasikan data ke dalam kelompok secara acak
+     4.Hitung pusat kelompok (sentoid/rata-rata) dari data yang ada di Masing-masing   kelompok
+     5.Alokasikan masing-masing data ke sentroid/rata-rata terdekat
+     6.Kembali ke langakah 3.
 
 
 
-# Replication Requieremnts
-Pada eksprimen ini algoritma K-Means akan digunakan untuk mengelompokan data kemiskinan di Jawa Tengah yang diambil dari website Tim Percepatan Penanggulangan Kemiskinan (TNP2K)
+# Loading Package
+Untuk melakukan Analysis ini, package yang diperlukan ialah; 
+Package readr menyiapkan fungsi read_csv() untuk import data dari file CSV.
 
-
-# Read Data
-   Untuk melakukan Analysis ini, package yang diperlukan ialah;
-   Package readr menyiapkan fungsi read_csv() untuk import data dari file CSV. Pada kasus ini digunakan data Data 40% Kemiskinan di jawa Tengah.
 ```{r}
-library (readr)
-urlfile = "https://raw.githubusercontent.com/dedenistiawan/Dataset/main/BDT.csv"
-
-data<-read.csv(url(urlfile), row.names = "Kabupaten")
-data
+library(tidyverse)
+library(cluster) 
+library(factoextra)
+data("iris")
+view(iris)
 ```
+
+```{r}
+dataclus <- iris [-5]
+str(dataclus)
+head(dataclus)
+```
+
+
+# Data Preparation
+Data Preparation atau bisa disebut juga dengan data preprocessing adalah suatu proses/langkah yang dilakukan untuk membuat data mentah menjadi data yang berkualitas (input yang baik untuk data mining tools)
+  -  Row atau baris sebagai nilai observasi, dan coloumn tau kolom sebagai variabel.
+  - Jika terdapat data missing harus di hilangkan terlebih dahulu.
+  - Data harus di standarisasi supaya satuan tiap variabel sama. Ketika nanti dilakukan profilisasi       tiap klasternya data dikembalikan ke satuan semula.
+
+```{r}
+dataclus <- iris
+str(dataclus)
+```
+## Menghilangkan data mising
+```{r}
+dataclus1 <- na.omit(dataclus) #untuk menghilangkan data missing
+summary(dataclus)
+```
+
+# mencari K Optimal
+
+    Dalam menentukan k pada cluster, ada beberapa pendekatan yang dapat digunakan yaitu : 
+     1. Elbow 
+     2. Silhouette 
+     3. Gap Statistic
+
+## Metode Elbow
+Pertama, kita akan coba menggunakan metode Elbow terlebih dahulu. Metode ini menggunakan pendekatan nilai within sum of square (wss) sebagai penentu k optimal.
+Metode Elbow merupakan suatu metode yang digunakan untuk menghasilkan informasi dalam menentukan jumlah cluster terbaik dengan cara melihat persentase hasi perbandingan antara jumlah cluster yang akan membentuk siku pada suatu titik
+
+
+```{r eval=FALSE}
+library(ggplot2)
+library(factoextra)
+fviz_nbclust(dataclus, kmeans, method = "wss") 
+```
+
+![](https://cdn.mathpix.com/snip/images/PXH3zoRgvMSHYCVCJtginvpyAt7XC8Ci4OJP3COK2zg.original.fullsize.png)
+ 
+Berdasarkan grafik di atas bisa dilihat terdapat potongan yang membentuk elbow atau menentukan siku pada K=2. Sehingga untuk metode elbow diperoleh hasil k optimal 2.
+    
+   
+## Silhouette 
+sihouette mengukur seberapa mirip suatu objek i dengan objek lain di klasternya sendiri versus objek di klaster tetangganya. Nilai yang mendekati 1 menunjukkan objek terkelompok dengan baik.
+     
+
+```{r eval=FALSE}
+fviz_nbclust(dataclus, kmeans, method = "silhouette")
+```
+![](https://cdn.mathpix.com/snip/images/VCMtWF3X7YnTQkszM_csVkLVoNh76JxMLMGkxxyYijw.original.fullsize.png)
+
+Semakin tinggi nilai rata-ratanya maka akan semakin baik. Berdasarkan grafik pada gambar di atas banyak klaster optimal yang terbentuk pada 𝐾 = 2.
+
   
-# memeriksa mising volue
-    Untuk mengecek apakah ada missing values, kita bisa gunakan fungsi is.na().
-```{r}
-colSums(is.na(data))
+## Cluster K-Means dengan K optimal
+Cara kerja algoritma K-Means dijelaskan dalam langkah-langkah di bawah ini: 
+  - 1 Pilih angka K untuk menentukan jumlah cluster. 
+  - 2 Pilih titik K atau centroid acak. (Bisa juga dari dataset input). 
+  - 3 Tetapkan setiap titik data ke centroid terdekatnya, yang akan membentuk cluster K yang telah          ditentukan sebelumnya.
+  
+```{r eval=FALSE}
+set.seed(123)
+hasil <- kmeans(dataclus, center = 2, nstart = 25)
+
+hasil$centers
+```
+
+       Sepal.Length Sepal.Width Petal.Length Petal.Width
+    1   -1.0111914   0.8504137    -1.300630  -1.2507035
+    2    0.5055957  -0.4252069     0.650315   0.6253518
+
+
+Nilai nstart merupakan nilai random set yang akan digunakan. Karena menggunakan random set 25, sehingga terdapat 25 model cluster dan dari 25 model tersebut, kmeans akan menampilkan model optimum menurut mesinnya. Dari hasil cluster tersebut terbentuk cluster 1 sebanyak anggota, cluster 2 sebanyak anggota. untuk merepresentasikan masing-masing cluster, kita dapat menggunakan nilai acuan mean atau standar deviasi dari masing-masing variabel tiap clusternya.
+
+
+Melihat jumlah anggota cluster
+
+```{r eval=FALSE}
+# Cluster size
+hasil$size
+```
+
+    [1]  50 100
+
+jumlah kuadrat pada cluster
+
+```{r eval=FALSE}
+hasil$tot.withinss
+```
+
+    [1] 220.8793
+
+
+Menggabungkan hasil cluster algoritma K-Means dengan data
+
+```{r eval=FALSE}
+iris <- cbind(datafix, cluster = hasil$cluster)
+head(iris)
 ```
 
 
-# Memebuat Matriks Jarak
-```{r}
-#Plot Disatance
-library(ggplot2)
-library(factoextra)
-distance <- get_dist(data)
-fviz_dist(distance, gradient = list(low = "#00AFBB", mid = "white", high = "#FC4E07"))
-```
+      Sepal.Length Sepal.Width Petal.Length Petal.Width cluster
+    1   -0.8976739  1.01560199    -1.335752   -1.311052       1
+    2   -1.1392005 -0.13153881    -1.335752   -1.311052       1
+    3   -1.3807271  0.32731751    -1.392399   -1.311052       1
+    4   -1.5014904  0.09788935    -1.279104   -1.311052       1
+    5   -1.0184372  1.24503015    -1.335752   -1.311052       1
+    6   -0.5353840  1.93331463    -1.165809   -1.048667       1
 
 
+## Mencari min, median, dan max.
 
-
-
-
-# Membuat jumlah klaster
-
-
-
-# Membuat plot kluster
-Jumlah klaster yang dibentuk mulai dari 2 sampai 5, untuk melihat sebaran data pada masing-masing cluster
-```{r}
-#use several different values of k
-k2 <- kmeans(data, centers = 2, nstart = 25)
-k3 <- kmeans(data, centers = 3, nstart = 25)
-k4 <- kmeans(data, centers = 4, nstart = 25)
-k5 <- kmeans(data, centers = 5, nstart = 25)
-```
-
+Dari data dibawah ini, dapat dilihat hasil min, median, dan max dari data kabupaten.
 
 ```{r}
-# plots to compare
-p1 <- fviz_cluster(k2, geom = "point", data = data) + ggtitle("k = 2")
-p2 <- fviz_cluster(k3, geom = "point",  data = data) + ggtitle("k = 3")
-p3 <- fviz_cluster(k4, geom = "point",  data = data) + ggtitle("k = 4")
-p4 <- fviz_cluster(k5, geom = "point",  data = data) + ggtitle("k = 5")
-```
-
-
-```{r}
-library(gridExtra)
-grid.arrange(p1, p2, p3, p4, nrow = 2)
-```
-
-
-# Menentukan jumlah klaster
-
-```{r}
-#Determining number Optimal Clusters
-##Elbow Method
-library(ggplot2)
-library(factoextra)
-fviz_nbclust(data, kmeans, method = "wss") +
-  geom_vline(xintercept = 2, linetype = 2)
-
-```
-
-# Metode Silhouette
-```{r}
-##Average Silhouette Method
-fviz_nbclust(data, kmeans, method = "silhouette")
+summary(dataclus)
 ```
 
 
 
+## Melihat korelasi dari data kabupaten 
+
+Dari data kabupaten, dapat dilihat hasil dari date kabupaten yang berkorelasi. penjelasannya adalah semisal nilai 1 berkorelasi baik dan kuat  dab nilainya 0 maa hasil korelasinya semakin lemah dan kurang kuat.
+
+
+```{r eval=FALSE}
+cor(dataclus)
+```
+ 
+ 
+                 Sepal.Length Sepal.Width Petal.Length Petal.Width
+    Sepal.Length    1.0000000  -0.1175698    0.8717538   0.8179411
+    Sepal.Width    -0.1175698   1.0000000   -0.4284401  -0.3661259
+    Petal.Length    0.8717538  -0.4284401    1.0000000   0.9628654
+    Petal.Width     0.8179411  -0.3661259    0.9628654   1.0000000
+
+
+# claster plot
+
+```{r eval=FALSE}
+fviz_cluster(hasil, data = dataclus)
+```
+![](https://cdn.mathpix.com/snip/images/FYmLPFgqcUEKwxtDdb_bfvN-rw_8aLAoT-TVboOOcIU.original.fullsize.png)
 
 
 
+
+
+   
 # Referensi
+   - https://rstudio-pubs-static.s3.amazonaws.com/472116_48709f6bb80148afb7a01673ac438dca.html
 
+   - "https://raw.githubusercontent.com/dedenistiawan/Dataset/main/BDT.csv"
+   
+   -  https://stat-ethz-ch.translate.goog/R-manual/R-devel/library/stats/html/kmeans.html?_x_tr_sl=en&_x_tr_tl=id&_x_tr_hl=id&_x_tr_pto=sc
 
 
 
