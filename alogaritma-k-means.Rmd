@@ -189,14 +189,6 @@ cor(dataclus)
     Petal.Width     0.8179411  -0.3661259    0.9628654   1.0000000
 
 
-# claster plot
-
-```{r eval=FALSE}
-fviz_cluster(hasil, data = dataclus)
-```
-![](https://cdn.mathpix.com/snip/images/FYmLPFgqcUEKwxtDdb_bfvN-rw_8aLAoT-TVboOOcIU.original.fullsize.png)
-
-
 
 
 
